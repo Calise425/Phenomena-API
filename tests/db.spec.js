@@ -1,6 +1,6 @@
 require('dotenv').config();
 
-const { rebuildDB, testDB } = require('../db/seedData');
+const { rebuildDB, testDB } = require('../db/seed_data');
 const { client, createReport, getOpenReports, _getReport, closeReport, createReportComment } = require('../db');
 
 let reportIdToCreate;
@@ -8,9 +8,11 @@ describe('Database', () => {
   const testComment = 'Did the humanoid eat colorful candy?';
   let testReportForComments, reportIdForComments;
   beforeAll(async() => {
+    await client.connect();
     await rebuildDB();
-    await testDB();
-    
+  })
+  afterAll(async() => {
+    await client.end();
   })
   describe('Reports', () => {
     let testReport, reports, singleReport;
@@ -64,7 +66,6 @@ describe('Database', () => {
           title: expect.any(String),
           location: expect.any(String),
           description: expect.any(String),
-          password: expect.any(String),
           isOpen: expect.any(Boolean),
           expirationDate: expect.any(Date),
         }));
@@ -96,19 +97,19 @@ describe('Database', () => {
         await expect(closeReport(300)).rejects.toThrow('Report does not exist with that id');
       });
       it('If the passwords dont match, throws an error', async () => {
-        await expect(closeReport(reportIdToClose, 'iLoveNothing')).rejects.toThrow('Password incorrect for this report, please try again');
+        await expect(closeReport(reportIdToCreate, 'iLoveNothing')).rejects.toThrow('Password incorrect for this report, please try again');
       });
       it('Finally, updates the report if there are no failures, as above', async () => {
-        message = await closeReport(reportIdToClose, 'iLoveF4ri3s');
+        message = await closeReport(reportIdToCreate, 'ShipIsNoMore');
         const {rows} = await client.query(`
         SELECT * FROM reports
         WHERE id=$1;
-        `, [reportIdToClose]);
+        `, [reportIdToCreate]);
         [report] = rows;
         expect(report.isOpen).toBe(false);
       });
       it('If it has already been closed, throws an error with a useful message', async () => {
-        await expect(closeReport(reportIdToClose, 'iLoveF4ri3s')).rejects.toThrow('This report has already been closed');
+        await expect(closeReport(reportIdToCreate, 'ShipIsNoMore')).rejects.toThrow('This report has already been closed');
       });
       it('Returns a message stating that the report has been closed', async () => {
         expect(message).toEqual({message: "Report successfully closed!"});

@@ -69,7 +69,6 @@ async function buildTables() {
  */
 async function rebuildDB() {
   try {
-    client.connect();
 
     await dropTables();
     await buildTables();

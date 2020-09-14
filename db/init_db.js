@@ -2,12 +2,13 @@ const { client } = require('./');
 const {
   rebuildDB,
   testDB
-} = require('./seedData');
+} = require('./seed_data');
 
 /**
  * Do not change this code!
  */
-rebuildDB()
+client.connect()
+  .then(rebuildDB)
   .then(testDB)
   .catch(console.error)
   .finally(() => client.end());
