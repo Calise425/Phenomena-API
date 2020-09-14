@@ -8,6 +8,9 @@
 
 // Have the server use morgan with setting 'dev'
 
+// Import cors 
+// Have the server use cors()
+
 // Have the server use bodyParser.json()
 
 // Have the server use your api router with prefix '/api'
