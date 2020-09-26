@@ -93,7 +93,7 @@ describe('API', () => {
     it('on caught error, call next(error), which sends back a 500 error', async () => {
       await expect(axios.post(`${API_URL}/api/reports/${2300}/comments`, {nothing: undefined})).rejects.toThrow('Request failed with status code 500');
     });
-    it('on success, it should send back the object returned by createReport', async () => {
+    it('on success, it should send back the object returned by createReportComment', async () => {
       const {data, status} = await axios.post(`${API_URL}/api/reports/${postedReportResponse.id}/comments`, commentFieldsToPost);
       postedCommentResponse = data;
       expect(status).toBe(200);

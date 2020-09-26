@@ -17,12 +17,10 @@
 
 // Import the client from your db/index.js
 
-// Create custom 404, send an error message in an object
-// { error: "route not found" }
+// Create custom 404 handler that sets the status code to 404.
 
-// Create custom error handling that returns the error
-// as an object, with status code of 500
-// { error: "the error message" }
+// Create custom error handling that sets the status code to 500
+// and returns the error as an object
 
 
 // Start the server listening on port PORT

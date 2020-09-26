@@ -74,8 +74,9 @@ async function createReport(reportFields) {
 }
 
 /**
- * NOTE: This function is not for export, so we use an _ to 
+ * NOTE: This function is not for use in other files, so we use an _ to
  * remind us that it is only to be used internally.
+ * (for our testing purposes, though, we WILL export it)
  * 
  * It is used in both closeReport and createReportComment, below.
  * 
@@ -106,8 +107,7 @@ async function _getReport(reportId) {
  * If the report is updated this way, return an object
  * with a message of "Success".
  * 
- * If nothing is updated this way, throw an error with
- * message "Report not found OR password does not match."
+ * If nothing is updated this way, throw an error
  */
 async function closeReport(reportId, password) {
   try {
@@ -139,8 +139,7 @@ async function closeReport(reportId, password) {
  */
 
 /**
- * If the report is not found, or is closed or expired, throw an error saying 
- * that the report is
+ * If the report is not found, or is closed or expired, throw an error
  * 
  * Otherwise, create a new comment with the correct
  * reportId, and update the expirationDate of the original
