@@ -173,7 +173,7 @@ async function createReportComment(reportId, commentFields) {
     
 
   } catch (error) {
-    console.log(error);
+    throw error;
   }
 }
 
