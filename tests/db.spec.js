@@ -3,7 +3,7 @@ require('dotenv').config();
 const { rebuildDB, testDB } = require('../db/seed_data');
 const { client, createReport, getOpenReports, _getReport, closeReport, createReportComment } = require('../db');
 
-let reportIdToCreate;
+let reportIdToCreate, reportIdToClose;
 describe('Database', () => {
   const testComment = 'Did the humanoid eat colorful candy?';
   let testReportForComments, reportIdForComments;
@@ -15,7 +15,7 @@ describe('Database', () => {
     await client.end();
   })
   describe('Reports', () => {
-    let testReport, reports, singleReport;
+    let testReport, testReportToClose, reports, singleReport;
     describe('createReport', () => {
       beforeAll(async() => {
         testReport = await createReport({
@@ -25,6 +25,13 @@ describe('Database', () => {
           password: 'ShipIsNoMore'
         });
         reportIdToCreate = testReport.id;
+        testReportToClose = await createReport({
+          title: 'Floating Being',
+          location: 'My Attic',
+          description: 'I saw it, turned away, then when I turned back, it was no more',
+          password: 'GhostbustersNeeded'
+        });
+        reportIdToClose = testReportToClose.id;
         
       })
       it('Returns an object', async () => {
@@ -89,7 +96,6 @@ describe('Database', () => {
       
     })
     describe('closeReport', () => {
-      const reportIdToClose = 2;
       let message, report;
       beforeAll(async() => {
       })
@@ -99,6 +105,14 @@ describe('Database', () => {
       it('If the passwords dont match, throws an error', async () => {
         await expect(closeReport(reportIdToCreate, 'iLoveNothing')).rejects.toThrow('Password incorrect for this report, please try again');
       });
+      it('If it has already been closed, throws an error with a useful message', async () => {
+        await client.query(`
+          UPDATE reports
+          SET "isOpen"='false'
+          WHERE id=$1;
+        `, [reportIdToClose]);
+        await expect(closeReport(reportIdToClose, 'GhostbustersNeeded')).rejects.toThrow('This report has already been closed');
+      });
       it('Finally, updates the report if there are no failures, as above', async () => {
         message = await closeReport(reportIdToCreate, 'ShipIsNoMore');
         const {rows} = await client.query(`
@@ -107,9 +121,6 @@ describe('Database', () => {
         `, [reportIdToCreate]);
         [report] = rows;
         expect(report.isOpen).toBe(false);
-      });
-      it('If it has already been closed, throws an error with a useful message', async () => {
-        await expect(closeReport(reportIdToCreate, 'ShipIsNoMore')).rejects.toThrow('This report has already been closed');
       });
       it('Returns a message stating that the report has been closed', async () => {
         expect(message).toEqual({message: "Report successfully closed!"});
@@ -151,7 +162,11 @@ describe('Database', () => {
         expect(comment.content).toBe(commentFields.content);
       });
       it('if it is not open, throw an error saying `That report has been closed, no comment has been made`', async () => {
-        await closeReport(reportIdForComments, password);
+        await client.query(`
+          UPDATE reports
+          SET "isOpen"='false'
+          WHERE id=$1;
+        `, [reportIdForComments]);
         await expect(createReportComment(reportIdForComments, commentFields)).rejects.toThrow('That report has been closed, no comment has been made');
       });
       
