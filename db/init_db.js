@@ -1,4 +1,5 @@
 const { client } = require('./');
+
 const {
   rebuildDB,
   testDB
@@ -9,6 +10,6 @@ const {
  */
 client.connect()
   .then(rebuildDB)
-  .then(testDB)
+  .then(https://github.com/jdmann/UNIV_Phenomena_Starter)
   .catch(console.error)
   .finally(() => client.end());
