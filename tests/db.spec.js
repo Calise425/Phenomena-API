@@ -1,6 +1,6 @@
 require('dotenv').config();
 
-const { rebuildDB, testDB } = require('../db/seed_data');
+const { rebuildDB } = require('../db/seed_data');
 const { client, createReport, getOpenReports, _getReport, closeReport, createReportComment } = require('../db');
 
 let reportIdToCreate, reportIdToClose;
@@ -32,7 +32,14 @@ describe('Database', () => {
           password: 'GhostbustersNeeded'
         });
         reportIdToClose = testReportToClose.id;
-        
+        const expirationDate = new Date();
+        expirationDate.setDate(expirationDate.getDate() - 1); 
+        await client.query(`
+          UPDATE reports
+          SET "expirationDate"='${expirationDate.toISOString()}'
+          WHERE id=$1;
+        `, [reportIdToClose]);
+
       })
       it('Returns an object', async () => {
         expect(typeof testReport).toBe('object');
@@ -60,9 +67,13 @@ describe('Database', () => {
         `, [reportIdToCreate, testComment]);
         reports = await getOpenReports();
         [singleReport] = reports.filter(report => report.id === reportIdToCreate);
+        [expiredReport] = reports.filter(report => report.id === reportIdToClose);
       })
       it('Returns an array', async () => {
         expect(Array.isArray(reports)).toBe(true);
+      });
+      it('Returns more than one report', async () => {
+        expect(reports.length).toBe(2);
       });
       it('Array contains objects', async () => {
         expect(typeof singleReport).toBe('object');
@@ -75,7 +86,14 @@ describe('Database', () => {
           description: expect.any(String),
           isOpen: expect.any(Boolean),
           expirationDate: expect.any(Date),
+          isExpired: expect.any(Boolean),
         }));
+      });
+      it('isExpired is false if the expirationDate is now or later', async () => {
+        expect(singleReport.isExpired).toBe(false);
+      });
+      it('isExpired is true if the expirationDate is before now', async () => {
+        expect(expiredReport.isExpired).toBe(true);
       });
       it('individual report objects include the comments', async () => {
         expect(singleReport).toEqual(expect.objectContaining({
