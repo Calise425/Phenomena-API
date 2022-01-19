@@ -53,7 +53,7 @@ async function buildTables() {
         id SERIAL PRIMARY KEY,
         "reportId" INTEGER REFERENCES reports(id),
         content TEXT NOT NULL
-      )
+      );
     `);
 
     console.log('Finished constructing tables!');
