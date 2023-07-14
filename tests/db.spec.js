@@ -1,5 +1,7 @@
 require('dotenv').config();
-
+if (typeof TextEncoder === 'undefined') {
+  global.TextEncoder = require('util').TextEncoder;
+}
 const { rebuildDB } = require('../db/seed_data');
 const { client, createReport, getOpenReports, _getReport, closeReport, createReportComment } = require('../db');
 

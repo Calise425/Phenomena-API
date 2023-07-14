@@ -171,7 +171,6 @@ async function expireReport(reportId) {
 async function testDB() {
   try {
     console.log("Filling DB with initial data");
-    
     const reports = await createInitialReports();
     await createInitialComments(reports);
     

@@ -1,4 +1,5 @@
 // Use the dotenv package, to create environment variables
+require('dotenv').config();
 
 // Create a constant variable, PORT, based on what's in process.env.PORT or fallback to 3000
 
