@@ -39,11 +39,6 @@ async function getOpenReports() {
     // also, remove the password from all reports
     // finally, return the reports
 
-    // const { rows } = await client.query(`
-    // SELECT * FROM reports`)
-
-    // console.log(rows)
-
     const { rows } = await client.query(
       `SELECT * FROM reports
       WHERE "isOpen"=$1;`,
@@ -202,7 +197,6 @@ async function createReportComment(reportId, commentFields) {
   try {
     // grab the report we are going to be commenting on
     const report = await _getReport(reportId);
-    console.log(report)
 
     if (! report ) {
       throw new Error("That report does not exist, no comment has been made");
