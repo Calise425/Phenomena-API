@@ -2,16 +2,10 @@
 require('dotenv');
 const { Client } = require('pg');
 // Create a constant, CONNECTION_STRING, from either process.env.DATABASE_URL or postgres://localhost:5432/phenomena-dev
-const CONNECTION_STRING = `postgres://localhost:5432/phenomena`;
+
 // Create the client using new Client(CONNECTION_STRING)
 // Do not connect to the client in this file!
-const client = new Client({
-  host: "localhost",
-  port: 5432,
-  database: "phenomena",
-  user: "postgres",
-  password: "Sophie42598!"
-});
+const client = new Client(process.env.DATABASE_URL)
 /**
  * Report Related Methods
  */
