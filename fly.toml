@@ -1,10 +1,13 @@
-# fly.toml app configuration file generated for phenomena on 2023-07-17T18:19:08-06:00
+# fly.toml app configuration file generated for phenomena on 2023-07-18T19:05:10-06:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
 app = "phenomena"
 primary_region = "den"
+
+[deploy]
+  release_command = "npm run migrate up"
 
 [http_service]
   internal_port = 3000
@@ -13,6 +16,3 @@ primary_region = "den"
   auto_start_machines = true
   min_machines_running = 0
   processes = ["app"]
-
-[deploy]
-  release_command = "npm run migrate up"

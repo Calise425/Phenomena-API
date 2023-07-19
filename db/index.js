@@ -230,7 +230,15 @@ async function createReportComment(reportId, commentFields) {
         console.log("Expiration date successfully updated")
       }
     })
-
+    
+    const { rows: [reportExp] } = await client.query(`
+      UPDATE reports
+      SET "expirationDate" = CURRENT_TIMESTAMP + interval '1 day'
+      WHERE id=$1
+      RETURNING *;`, 
+      [reportId])
+    
+    console.log("Report expiration has been changed to ", reportExp)
     // then update the expiration date to a day from now
     // finally, return the comment
     return comment;
